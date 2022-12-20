@@ -1,0 +1,113 @@
+---
+title: "rate plotting on a simple map without bathymetry data"
+author: "Subhadeep chowdhury"
+date: '"9th December 2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+ 
+###Starting from here load ggplot, sf, r natural earth, rnaturalearthdata
+  
+  library("ggplot2")
+  theme_set(theme_bw())
+  library("sf")
+  
+  library("rnaturalearth")
+  library("rnaturalearthdata")
+  
+  world <- ne_countries(scale = "medium", returnclass = "sf")
+  class(world)
+  
+  ## [1] "sf"  
+  ## [1] "data.frame"
+  
+
+##### Set working directory
+  setwd("C:/Users/subhadeep/Desktop/Review/map_rates/19th Oct 2022_Rates plot_surface and integrated")
+  
+  
+#load your data; within seasons column mention the season to plot together
+  data <- read.table("integrated rates.txt", header = TRUE, na.strings = "NaN")
+  
+###convert your text data to numeric data
+  
+  data$Rates=as.numeric(data$Rates)
+  
+#### this code is to remove NA from your data without touching excel or text file
+  nadata=which(is.na(data$Rates))
+  dim(data)
+  data=data[-nadata,]
+  dim(data)
+####this code will search the value more than something that you mentioned and mutate in a specific value that you want
+  
+  for (i in 1:dim(data)[1]) {
+    if(data$Rates[i] > 177.0)
+      data$Rates[i] = 177.0
+  }
+  
+####rate plotting by ggplot 
+ ggplot(data = world) +
+    geom_sf() +
+    coord_sf(xlim = c(25, 130), ylim = c(30, -60), expand = FALSE) +
+   geom_point(data = data, mapping = aes(x = Longitude, y = Latitude, size = Rates, color=Monsoon), shape = 19) + 
+   scale_color_manual( values=c("deeppink", "blue3", "deeppink", "darkorange"))+ scale_radius(range = c(1,6),limits=c(0.7,177),breaks=c(5,25,50,75, 100, 150, 177))
+
+
+
+  
+  
+  
+  
+  
+  
+ 
+  
+  
+  
+  
+
+  
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+ 
+  
+  
+  
+    
+
+
